@@ -7,6 +7,11 @@
 
 /* just a start */
 
+void chr_repeat(int c, int n)
+{
+    while(n-- > 0)
+        putchar(c);
+}
 
 char* str_getnum(const char* str)
 {
@@ -65,13 +70,11 @@ int char_add(char chr1, char chr2, char* carry_chr)
 }
 
 
-char* add(const char* num1, const char* num2, char** carry)
+char* add(const char* n1, const char* n2, char** carry)
 {
     char* zero = "0";
-    char* n1;
-    char* n2;
-    char *np1;
-    char *np2;
+    const char *np1;
+    const char *np2;
 
     char cbuf[BUFSZ];
     char rbuf[BUFSZ];
@@ -79,22 +82,8 @@ char* add(const char* num1, const char* num2, char** carry)
     char* cp = cbuf + BUFSZ - 1;
     char* rp = rbuf + BUFSZ - 1;
 
-    size_t l1, l2, l3, l4, mxl;
-
-    if (!(n1 = str_getnum(num1)))
-        return 0;
-
-    if (!(n2 = str_getnum(num2)))
-    {
-        free(n1);
-        return 0;
-    }
-
-    l1 = strlen(n1);
-    l2 = strlen(n2);
-
-    np1 = n1 + l1 - 1;
-    np2 = n2 + l2 - 1;
+    np1 = n1 + strlen(n1) - 1;
+    np2 = n2 + strlen(n2) - 1;
 
     *rp = *cp = '\0';
     --cp;
@@ -128,46 +117,65 @@ char* add(const char* num1, const char* num2, char** carry)
     else
         ++cp;
 
-    l3 = strlen(rp);
-    l4 = strlen(cp);
-
-    mxl = l1;
-    if (mxl < l2)
-        mxl = l2;
-
-    if (mxl < l3)
-        mxl = l3;
-
-    if (mxl < l4)
-        mxl = l4;
-
-    printf("       %*s +\n", mxl, n1);
-    printf("       %*s\n", mxl, n2);
-    printf("result:%*s\n", mxl, rp);
-    printf(" carry:%*s\n", mxl, cp);
-
-    free(n1);
-    free(n2);
+    *carry = strdup(cp);
+    return strdup(rp);
 }
 
 
 int main(int argc, char** argv)
 {
-
-    char n1[BUFSZ];
-    char n2[BUFSZ];
+    int failed = 0;
+    char str1[BUFSZ];
+    char str2[BUFSZ];
     char* r;
+    char* c;
+
+    size_t rl;
+
+    char* n1 = 0;
+    char* n2 = 0;
 
     printf("enter 1st number: ");
-    fgets(n1, BUFSZ, stdin);
+    fgets(str1, BUFSZ, stdin);
 
     printf("enter 2nd number: ");
-    fgets(n2, BUFSZ, stdin);
+    fgets(str2, BUFSZ, stdin);
 
-    r = add(n1,n2,0);
+    n1 = str_getnum(str1);
+
+    if (!n1)
+        goto fail;
+
+    n2 = str_getnum(str2);
+
+    if (!n2)
+        goto fail;
+
+    r = add(n1, n2, &c);
 
     if (!r)
+        goto fail;
+
+    rl = strlen(r);
+    puts("\n");
+    printf("%*s +\n", rl, n1);
+    printf("%*s\n",   rl, n2);
+    chr_repeat('-', rl);
+    printf("\n%*s\n",   rl, r);
+    chr_repeat('-', rl);
+    printf("\n%*s\n",   rl, c);
+
+
+finish:
+    free(n1);
+    free(n2);
+
+    if (failed)
         printf("failed\n");
 
-    return 0;
+    return failed;
+
+fail:
+    failed = -1;
+    goto finish;
 }
