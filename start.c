@@ -96,7 +96,6 @@ char* add(const char* num1, const char* num2, char** carry)
     np1 = n1 + l1 - 1;
     np2 = n2 + l2 - 1;
 
-
     *rp = *cp = '\0';
     --cp;
 
@@ -127,7 +126,7 @@ char* add(const char* num1, const char* num2, char** carry)
         *--rp = char_add(*cp, '0', cbuf);
     }
     else
-        *cp = ' ';
+        ++cp;
 
     l3 = strlen(rp);
     l4 = strlen(cp);
