@@ -6,6 +6,8 @@
 #define BUFSZ 100
 
 
+
+
 /* just a start */
 
 void chr_repeat(int c, int n)
@@ -21,7 +23,7 @@ char* str_getnum(const char* str)
     const char* s2;
     char* r = 0;
 
-    if (!str || !strlen(str))
+    if (!str)
         return 0;
 
     s1 = str;
@@ -41,6 +43,10 @@ char* str_getnum(const char* str)
             return 0;
         ++s2;
     }
+
+    /* zero length string test without using strlen */
+    if (s1 == s2)
+        return 0;
 
     /* skip leading zeros... */
     for (; *s1 == '0'; ++s1);
@@ -171,7 +177,6 @@ int main(int argc, char** argv)
     printf("\n%*s\n",   rl, r);
     chr_repeat('-', rl);
     printf("\n%*s\n",   rl, c);
-
 
 finish:
     free(n1);
