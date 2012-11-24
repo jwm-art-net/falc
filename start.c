@@ -14,6 +14,7 @@ void chr_repeat(int c, int n)
         putchar(c);
 }
 
+
 char* str_getnum(const char* str)
 {
     const char* s1 = str;
@@ -25,11 +26,13 @@ char* str_getnum(const char* str)
 
     s1 = str;
 
+    /* skip whitespace */
     while(*s1 != '\0' && isspace(*s1))
         ++s1;
 
     s2 = s1;
 
+    /* test for non numeric characters found */
     while(*s2 != '\0')
     {
         if (isspace(*s2))
@@ -38,6 +41,13 @@ char* str_getnum(const char* str)
             return 0;
         ++s2;
     }
+
+    /* skip leading zeros... */
+    for (; *s1 == '0'; ++s1);
+
+    /* ...unless number is zero */
+    if (!isdigit(*s1))
+        --s1;
 
     r = malloc((s2 - s1) + 1);
     strncpy(r, s1, (s2 - s1));
