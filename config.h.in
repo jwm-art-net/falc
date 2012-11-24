@@ -1,0 +1,12 @@
+#define PACKAGE     "${PROJECT_NAME}"
+#define VERSION \
+    "0.${falc_VERSION_MAJOR}.${falc_VERSION_MINOR}"
+
+#cmakedefine DEBUG 1
+
+#if !DEBUG
+#define NDEBUG
+#endif
+
+#cmakedefine HAVE_MALLOC_H 1
+
