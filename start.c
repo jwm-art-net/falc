@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <ctype.h>
 
 #define BUFSZ 100
 
@@ -18,27 +19,22 @@ char* str_getnum(const char* str)
     const char* s1 = str;
     const char* s2;
     char* r = 0;
-    int dp = 0;
-    size_t len = 0;
 
     if (!str || !strlen(str))
         return 0;
 
     s1 = str;
 
-    while(*s1 != '\0'
-       &&(*s1 == ' ' || *s1 == '\t' || *s1 == '\n' || *s1 == '\r'))
-    {
+    while(*s1 != '\0' && isspace(*s1))
         ++s1;
-    }
 
     s2 = s1;
 
     while(*s2 != '\0')
     {
-        if (*s1 == ' ' || *s2 == '\t' || *s2 == '\n' || *s2 == '\r')
+        if (isspace(*s2))
             break;
-        else if (*s2 < '0' || *s2 > '9')
+        else if (!isdigit(*s2))
             return 0;
         ++s2;
     }
@@ -57,7 +53,7 @@ int char_add(char chr1, char chr2, char* carry_chr)
     int c2 = (chr2 - '0');
     int s = c1 + c2;
 
-    if (*carry_chr < '0' || *carry_chr > '9')
+    if (!isdigit(*carry_chr))
         *carry_chr = '0';
 
     if (s > 9)
@@ -99,6 +95,7 @@ char* add(const char* n1, const char* n2, char** carry)
         r = char_add(*np1, *np2, cp);
         *rp = char_add(r, *(cp + 1), cp);
 
+        /* erase old zeros from carry line */
         if (*(cp + 1) == '0')
             *(cp + 1) = ' ';
 
@@ -110,11 +107,12 @@ char* add(const char* n1, const char* n2, char** carry)
 
     } while (np1 != zero || np2 != zero);
 
+    /* won't use isdigit due to test required: */
     if (*cp > '0' && *cp <= '9')
     {
         *--rp = char_add(*cp, '0', cbuf);
     }
-    else
+    else /* skip 1st zero in carry line */
         ++cp;
 
     *carry = strdup(cp);
@@ -130,7 +128,7 @@ int main(int argc, char** argv)
     char* r;
     char* c;
 
-    size_t rl;
+    int rl;
 
     char* n1 = 0;
     char* n2 = 0;
@@ -156,9 +154,8 @@ int main(int argc, char** argv)
     if (!r)
         goto fail;
 
-    rl = strlen(r);
-    puts("\n");
-    printf("%*s +\n", rl, n1);
+    rl = (int)strlen(r);
+    printf("\n%*s +\n", rl, n1);
     printf("%*s\n",   rl, n2);
     chr_repeat('-', rl);
     printf("\n%*s\n",   rl, r);
